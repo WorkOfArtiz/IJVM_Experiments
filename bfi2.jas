@@ -1,0 +1,2134 @@
+// Generated with macro jas
+
+.constant
+  B00000002      0x00000002
+  B00000008      0x00000008
+  B0000000C      0x0000000c
+  B00000020      0x00000020
+  B00000080      0x00000080
+  B000000C0      0x000000c0
+  B000000F0      0x000000f0
+  B00000100      0x00000100
+  B00000200      0x00000200
+  B00000400      0x00000400
+  B00000800      0x00000800
+  B00000C00      0x00000c00
+  B00001000      0x00001000
+  B00002000      0x00002000
+  B00004000      0x00004000
+  B00008000      0x00008000
+  B0000C000      0x0000c000
+  B0000F000      0x0000f000
+  B0000FF00      0x0000ff00
+  B00010000      0x00010000
+  B00020000      0x00020000
+  B00040000      0x00040000
+  B00080000      0x00080000
+  B000C0000      0x000c0000
+  B00100000      0x00100000
+  B00200000      0x00200000
+  B00400000      0x00400000
+  B00800000      0x00800000
+  B00C00000      0x00c00000
+  B00F00000      0x00f00000
+  B01000000      0x01000000
+  B02000000      0x02000000
+  B04000000      0x04000000
+  B08000000      0x08000000
+  B0C000000      0x0c000000
+  B10000000      0x10000000
+  B20000000      0x20000000
+  B40000000      0x40000000
+  B80000000      0x80000000
+  BC0000000      0xc0000000
+  BF0000000      0xf0000000
+  BFF000000      0xff000000
+  BFFFF0000      0xffff0000
+  BF_MEM_MASK    0x0fff
+  BF_MEM_SIZE    0x1000
+  BITMASK_INVSIGN 0x7fffffff
+  BITMASK_SIGNBIT 0x80000000
+  BYTECODE_ADD   0
+  BYTECODE_CLR   6
+  BYTECODE_IN    5
+  BYTECODE_JNZ   3
+  BYTECODE_JZ    2
+  BYTECODE_MEM   1
+  BYTECODE_OUT   4
+  HIGHEST_VALUEBIT 0x40000000
+  INITIAL_CAPACITY 126
+  _OBJREF        0xdeadc001
+.end-constant
+
+.main
+  LDC_W _OBJREF
+  INVOKEVIRTUAL _main
+  IFEQ success
+error:
+  ERR
+success:
+  HALT
+.end-main
+
+.method list_new(capacity)
+.var
+  list
+  capacity_real
+.end-var
+  ILOAD capacity
+  BIPUSH 2
+  IADD
+  ISTORE capacity_real
+  ILOAD capacity_real
+  NEWARRAY
+  ISTORE list
+  ILOAD capacity_real
+  BIPUSH 0
+  ILOAD list
+  IASTORE
+  BIPUSH 2
+  BIPUSH 1
+  ILOAD list
+  IASTORE
+
+  ILOAD list
+  IRETURN
+.end-method
+
+.method list_pop(list_ref)
+.var
+  size
+.end-var
+
+  BIPUSH 1
+  ILOAD list_ref
+  IALOAD
+  ISTORE size
+  IINC size -1
+  ILOAD size
+  IFLT error
+
+  ILOAD size
+  BIPUSH 1
+  ILOAD list_ref
+  IASTORE
+  ILOAD size
+  ILOAD list_ref
+  IALOAD
+  IRETURN
+
+error:
+  BIPUSH 91
+  OUT
+  BIPUSH 33
+  OUT
+  BIPUSH 93
+  OUT
+  BIPUSH 32
+  OUT
+  BIPUSH 66
+  OUT
+  BIPUSH 111
+  OUT
+  BIPUSH 117
+  OUT
+  BIPUSH 110
+  OUT
+  BIPUSH 100
+  OUT
+  BIPUSH 115
+  OUT
+  BIPUSH 32
+  OUT
+  BIPUSH 101
+  OUT
+  BIPUSH 114
+  OUT
+  BIPUSH 114
+  OUT
+  BIPUSH 111
+  OUT
+  BIPUSH 114
+  OUT
+  BIPUSH 10
+  OUT
+  ERR
+.end-method
+
+.method list_append(list_ref, value)
+.var
+  list
+  i
+  size
+  capacity
+.end-var
+
+  BIPUSH 0
+  ILOAD list_ref
+  IALOAD
+  DUP
+  ISTORE capacity
+
+  BIPUSH 1
+  ILOAD list_ref
+  IALOAD
+  DUP
+  ISTORE size
+
+  IF_ICMPEQ realloc
+  ILOAD list_ref
+  ISTORE list
+done:
+  // arr[size] = value
+  ILOAD value
+  ILOAD size
+  ILOAD list
+  IASTORE
+
+  // size++
+  IINC size 1
+
+  // arr.size = size
+  ILOAD size
+  BIPUSH 1
+  ILOAD list
+  IASTORE
+
+  ILOAD list
+  IRETURN
+
+realloc:
+  BIPUSH 1
+  ISTORE i
+  ILOAD size
+  DUP
+  IADD
+  NEWARRAY
+  ISTORE list
+
+realloc_loop:
+  // list[i] = list_ref[i];
+  ILOAD i
+  ILOAD list_ref
+  IALOAD
+  ILOAD i
+  ILOAD list
+  IASTORE
+
+  // i++
+  IINC i 1
+
+  // if (i < size) goto realloc_loop
+  ILOAD i
+  ILOAD size
+  ISUB
+  IFLT realloc_loop
+
+realloc_done:
+  // list[LIST_CAPACITY] = cap * 2
+  ILOAD size
+  DUP
+  IADD
+  BIPUSH 0
+  ILOAD list
+  IASTORE
+  GOTO done
+.end-method
+
+.method bytecode_compile()
+.var
+  txt
+  char
+  tmp
+  quotes_stack
+.end-var
+
+  LDC_W _OBJREF
+  LDC_W INITIAL_CAPACITY
+  INVOKEVIRTUAL list_new
+  ISTORE txt
+  LDC_W _OBJREF
+  LDC_W INITIAL_CAPACITY
+  INVOKEVIRTUAL list_new
+  ISTORE quotes_stack
+  BIPUSH 0
+  ISTORE tmp
+
+pl:
+  IN
+  ISTORE char
+l:
+  ILOAD char
+  BIPUSH 58
+  IF_ICMPEQ ret
+  ILOAD char
+  IFEQ ret
+
+  ILOAD char
+  BIPUSH 43
+  ISUB
+  IFLT pl
+  ILOAD char
+  BIPUSH 43
+  IF_ICMPEQ plus_compile
+  ILOAD char
+  BIPUSH 45
+  IF_ICMPEQ hyphen_compile
+  ILOAD char
+  BIPUSH 60
+  IF_ICMPEQ lt_compile
+  ILOAD char
+  BIPUSH 62
+  IF_ICMPEQ gt_compile
+  ILOAD char
+  BIPUSH 91
+  IF_ICMPEQ bq_open_compile
+  ILOAD char
+  BIPUSH 93
+  IF_ICMPEQ bq_close_compile
+  ILOAD char
+  BIPUSH 46
+  IF_ICMPEQ period_compile
+  ILOAD char
+  BIPUSH 44
+  IF_ICMPEQ comma_compile
+  GOTO pl
+
+next_add_char:
+  IN
+  ISTORE char
+  ILOAD char
+  BIPUSH 43
+  IF_ICMPEQ plus_compile
+  ILOAD char
+  BIPUSH 45
+  IF_ICMPEQ hyphen_compile
+  ILOAD char
+  BIPUSH 60
+  IF_ICMPEQ add_compile
+  ILOAD char
+  BIPUSH 62
+  IF_ICMPEQ add_compile
+  ILOAD char
+  BIPUSH 91
+  IF_ICMPEQ add_compile
+  ILOAD char
+  BIPUSH 93
+  IF_ICMPEQ add_compile
+  ILOAD char
+  BIPUSH 46
+  IF_ICMPEQ add_compile
+  ILOAD char
+  BIPUSH 44
+  IF_ICMPEQ add_compile
+  GOTO next_add_char
+
+add_compile:
+  ILOAD tmp
+  IFEQ l
+
+  // write ADD x to txt
+  LDC_W _OBJREF
+  ILOAD txt
+  LDC_W BYTECODE_ADD
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  LDC_W _OBJREF
+  ILOAD txt
+  ILOAD tmp
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  BIPUSH 0
+  ISTORE tmp
+  GOTO l
+
+plus_compile:
+  IINC tmp 1
+  GOTO next_add_char
+
+hyphen_compile:
+  IINC tmp -1
+  GOTO next_add_char
+
+next_mem_char:
+  IN
+  ISTORE char
+  ILOAD char
+  BIPUSH 60
+  IF_ICMPEQ lt_compile
+  ILOAD char
+  BIPUSH 62
+  IF_ICMPEQ gt_compile
+  ILOAD char
+  BIPUSH 43
+  IF_ICMPEQ mem_compile
+  ILOAD char
+  BIPUSH 45
+  IF_ICMPEQ mem_compile
+  ILOAD char
+  BIPUSH 91
+  IF_ICMPEQ mem_compile
+  ILOAD char
+  BIPUSH 93
+  IF_ICMPEQ mem_compile
+  ILOAD char
+  BIPUSH 46
+  IF_ICMPEQ mem_compile
+  ILOAD char
+  BIPUSH 44
+  IF_ICMPEQ mem_compile
+  GOTO next_mem_char
+
+mem_compile:
+  ILOAD tmp
+  IFEQ l
+
+  // write MEM x to txt
+  LDC_W _OBJREF
+  ILOAD txt
+  LDC_W BYTECODE_MEM
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  LDC_W _OBJREF
+  ILOAD txt
+  ILOAD tmp
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  BIPUSH 0
+  ISTORE tmp
+  GOTO l
+
+lt_compile:
+  IINC tmp -1
+  GOTO next_mem_char
+
+gt_compile:
+  IINC tmp 1
+  GOTO next_mem_char
+
+bq_open_compile:
+  // quotes_stack.append(txt.ptr)
+  LDC_W _OBJREF
+  ILOAD quotes_stack
+  BIPUSH 1
+ILOAD txt
+IALOAD
+  INVOKEVIRTUAL list_append
+  ISTORE quotes_stack
+
+  // txt.append(JZ 0), 0 is later filled in
+  LDC_W _OBJREF
+  ILOAD txt
+  LDC_W BYTECODE_JZ
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  LDC_W _OBJREF
+  ILOAD txt
+  BIPUSH 0
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  GOTO pl
+
+bq_close_compile:
+  LDC_W _OBJREF
+  ILOAD quotes_stack
+  INVOKEVIRTUAL list_pop
+  ISTORE tmp
+
+  // check if we have the following situation: [+] or [-]
+  // lab_a: JZ lab_d
+  // lab_b: ADD -1
+  // lab_c: JNZ lab_b
+  //
+  // In this case, txt.rsize - jz.pos == 4 and txt[jz.pos + 2] == ADD
+  BIPUSH 1
+  ILOAD txt
+  IALOAD
+  ILOAD tmp
+  ISUB
+  BIPUSH 4
+  IF_ICMPEQ possible_clear
+
+jnz_write:
+  // JNZ after [
+  LDC_W _OBJREF
+  ILOAD txt
+  LDC_W BYTECODE_JNZ
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  LDC_W _OBJREF
+  ILOAD txt
+  ILOAD tmp
+BIPUSH 2
+IADD
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+
+  // the JZ before needs to jump after the JNZ x instruction
+  BIPUSH 1
+  ILOAD txt
+  IALOAD
+  ILOAD tmp
+  BIPUSH 1
+  IADD
+  ILOAD txt
+  IASTORE
+
+  BIPUSH 0
+  ISTORE tmp
+  GOTO pl
+
+possible_clear:
+  // if txt[jz.pos + 2] == ADD (0)
+  ILOAD tmp
+  BIPUSH 2
+  IADD
+  ILOAD txt
+  IALOAD
+  IFEQ emit_clear
+  GOTO jnz_write
+
+emit_clear:
+  // pop the add and jz
+  LDC_W _OBJREF
+  ILOAD txt
+  INVOKEVIRTUAL list_pop
+  LDC_W _OBJREF
+  ILOAD txt
+  INVOKEVIRTUAL list_pop
+  LDC_W _OBJREF
+  ILOAD txt
+  INVOKEVIRTUAL list_pop
+  LDC_W _OBJREF
+  ILOAD txt
+  INVOKEVIRTUAL list_pop
+
+  // add clear opcode
+  LDC_W _OBJREF
+  ILOAD txt
+  LDC_W BYTECODE_CLR
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+
+  // reset tmp
+  BIPUSH 0
+  ISTORE tmp
+
+  // jump back
+  GOTO pl
+
+period_compile:
+  LDC_W _OBJREF
+  ILOAD txt
+  LDC_W BYTECODE_OUT
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  GOTO pl
+
+comma_compile:
+  LDC_W _OBJREF
+  ILOAD txt
+  LDC_W BYTECODE_IN
+  INVOKEVIRTUAL list_append
+  ISTORE txt
+  GOTO pl
+
+ret:
+  ILOAD txt
+  IRETURN
+.end-method
+
+.method bytecode_execute(txt, input)
+.var
+  mem
+  mem_val
+  mem_ptr
+  pc
+  last_pc
+  op
+  i_ptr
+  i_end
+.end-var
+  // initialize brainfuck memory
+  LDC_W BF_MEM_SIZE
+  NEWARRAY
+  ISTORE mem
+  BIPUSH 0
+  ISTORE mem_ptr
+  BIPUSH 0
+  ISTORE mem_val
+
+  // set program counter
+  BIPUSH 2
+  ISTORE pc
+  BIPUSH 1
+  ILOAD txt
+  IALOAD
+  BIPUSH -1
+  IADD
+  ISTORE last_pc
+
+  // set input counter and end of input
+  BIPUSH 2
+  ISTORE i_ptr
+  BIPUSH 1
+  ILOAD input
+  IALOAD
+  ISTORE i_end
+
+exec_loop:
+  // if last_pc < pc
+  ILOAD last_pc
+  ILOAD pc
+  ISUB
+  IFLT exec_done
+
+  // read op
+  ILOAD pc
+  ILOAD txt
+  IALOAD
+  ISTORE op
+
+  // move pc past op
+  IINC pc 1
+
+  // do a small binary tree lookup, 1 < op => JZ/JNZ/OUT/IN else ADD/MEM
+  BIPUSH 1
+  ILOAD op
+  ISUB
+  IFLT exec_rest
+
+  // if (op == 0) goto exec_add
+  ILOAD op
+  IFEQ exec_add
+
+exec_mem:
+  // mem[mem_ptr] = mem_val
+  ILOAD mem_val
+  ILOAD mem_ptr
+  ILOAD mem
+  IASTORE
+
+  // mem_ptr += txt[pc]
+  ILOAD mem_ptr
+  ILOAD pc
+  ILOAD txt
+  IALOAD
+  IADD
+  ISTORE mem_ptr
+
+  // apply memory mask (wrap around)
+  ILOAD mem_ptr
+  LDC_W BF_MEM_MASK
+  IAND
+  ISTORE mem_ptr
+
+  // retrieve mem_val
+  ILOAD mem_ptr
+  ILOAD mem
+  IALOAD
+  ISTORE mem_val
+
+  // pc is increased by 1 for MEM's argument
+  IINC pc 1
+  GOTO exec_loop
+
+exec_add:
+  // mem_val += txt[pc]
+  ILOAD mem_val
+  ILOAD pc
+  ILOAD txt
+  IALOAD
+  IADD
+  ISTORE mem_val
+
+  // pc is increased by 1, for ADD's argument
+  IINC pc 1
+  GOTO exec_loop
+
+exec_rest:
+  ILOAD op
+  BIPUSH 4
+  ISUB
+  IFLT exec_jumps
+  ILOAD op
+  BIPUSH 4
+  IF_ICMPEQ exec_out
+  ILOAD op
+  BIPUSH 5
+  IF_ICMPEQ exec_in
+  ILOAD op
+  BIPUSH 6
+  IF_ICMPEQ exec_clr
+
+  // Opcodes shouldnt get here
+  BIPUSH 73
+  OUT
+  BIPUSH 110
+  OUT
+  BIPUSH 99
+  OUT
+  BIPUSH 111
+  OUT
+  BIPUSH 114
+  OUT
+  BIPUSH 114
+  OUT
+  BIPUSH 101
+  OUT
+  BIPUSH 99
+  OUT
+  BIPUSH 116
+  OUT
+  BIPUSH 32
+  OUT
+  BIPUSH 111
+  OUT
+  BIPUSH 112
+  OUT
+  BIPUSH 10
+  OUT
+  ERR
+
+exec_in:
+  ILOAD i_ptr
+  ILOAD i_end
+  IF_ICMPEQ exec_in_eof
+  ILOAD i_ptr
+  ILOAD input
+  IALOAD
+  ISTORE mem_val
+  IINC i_ptr 1
+  GOTO exec_loop
+
+exec_in_eof:
+  BIPUSH 0
+  ISTORE mem_val
+  GOTO exec_loop
+
+exec_out:
+  ILOAD mem_val
+  OUT
+  GOTO exec_loop
+
+exec_jumps:
+  ILOAD op
+  BIPUSH 3
+  IF_ICMPEQ exec_jnz
+
+exec_jz:
+  ILOAD mem_val
+  IFEQ exec_do_jump
+
+exec_dont_jump:
+  IINC pc 1
+  GOTO exec_loop
+
+exec_jnz:
+  ILOAD mem_val
+  IFEQ exec_dont_jump
+
+exec_do_jump:
+  // pc = txt[pc]
+  ILOAD pc
+  ILOAD txt
+  IALOAD
+  ISTORE pc
+  GOTO exec_loop
+
+exec_clr:
+  BIPUSH 0
+  ISTORE mem_val
+  GOTO exec_loop
+
+exec_done:
+  BIPUSH 0
+  IRETURN
+.end-method
+
+// Every bit mask
+
+.method msb(x)
+lbffffffff: ILOAD x
+  LDC_W BFFFF0000
+  IAND
+  IFEQ lb0000ffff
+lbffff0000: ILOAD x
+  LDC_W BFF000000
+  IAND
+  IFEQ lb00ff0000
+lbff000000: ILOAD x
+  LDC_W BF0000000
+  IAND
+  IFEQ lb0f000000
+lbf0000000: ILOAD x
+  LDC_W BC0000000
+  IAND
+  IFEQ lb30000000
+lbc0000000: ILOAD x
+  LDC_W B80000000
+  IAND
+  IFEQ lb40000000
+lb80000000: LDC_W B80000000
+  IRETURN
+lb40000000: LDC_W B40000000
+  IRETURN
+lb30000000: ILOAD x
+  LDC_W B20000000
+  IAND
+  IFEQ lb10000000
+lb20000000: LDC_W B20000000
+  IRETURN
+lb10000000: LDC_W B10000000
+  IRETURN
+lb0f000000: ILOAD x
+  LDC_W B0C000000
+  IAND
+  IFEQ lb03000000
+lb0c000000: ILOAD x
+  LDC_W B08000000
+  IAND
+  IFEQ lb04000000
+lb08000000: LDC_W B08000000
+  IRETURN
+lb04000000: LDC_W B04000000
+  IRETURN
+lb03000000: ILOAD x
+  LDC_W B02000000
+  IAND
+  IFEQ lb01000000
+lb02000000: LDC_W B02000000
+  IRETURN
+lb01000000: LDC_W B01000000
+  IRETURN
+lb00ff0000: ILOAD x
+  LDC_W B00F00000
+  IAND
+  IFEQ lb000f0000
+lb00f00000: ILOAD x
+  LDC_W B00C00000
+  IAND
+  IFEQ lb00300000
+lb00c00000: ILOAD x
+  LDC_W B00800000
+  IAND
+  IFEQ lb00400000
+lb00800000: LDC_W B00800000
+  IRETURN
+lb00400000: LDC_W B00400000
+  IRETURN
+lb00300000: ILOAD x
+  LDC_W B00200000
+  IAND
+  IFEQ lb00100000
+lb00200000: LDC_W B00200000
+  IRETURN
+lb00100000: LDC_W B00100000
+  IRETURN
+lb000f0000: ILOAD x
+  LDC_W B000C0000
+  IAND
+  IFEQ lb00030000
+lb000c0000: ILOAD x
+  LDC_W B00080000
+  IAND
+  IFEQ lb00040000
+lb00080000: LDC_W B00080000
+  IRETURN
+lb00040000: LDC_W B00040000
+  IRETURN
+lb00030000: ILOAD x
+  LDC_W B00020000
+  IAND
+  IFEQ lb00010000
+lb00020000: LDC_W B00020000
+  IRETURN
+lb00010000: LDC_W B00010000
+  IRETURN
+lb0000ffff: ILOAD x
+  LDC_W B0000FF00
+  IAND
+  IFEQ lb000000ff
+lb0000ff00: ILOAD x
+  LDC_W B0000F000
+  IAND
+  IFEQ lb00000f00
+lb0000f000: ILOAD x
+  LDC_W B0000C000
+  IAND
+  IFEQ lb00003000
+lb0000c000: ILOAD x
+  LDC_W B00008000
+  IAND
+  IFEQ lb00004000
+lb00008000: LDC_W B00008000
+  IRETURN
+lb00004000: LDC_W B00004000
+  IRETURN
+lb00003000: ILOAD x
+  LDC_W B00002000
+  IAND
+  IFEQ lb00001000
+lb00002000: LDC_W B00002000
+  IRETURN
+lb00001000: LDC_W B00001000
+  IRETURN
+lb00000f00: ILOAD x
+  LDC_W B00000C00
+  IAND
+  IFEQ lb00000300
+lb00000c00: ILOAD x
+  LDC_W B00000800
+  IAND
+  IFEQ lb00000400
+lb00000800: LDC_W B00000800
+  IRETURN
+lb00000400: LDC_W B00000400
+  IRETURN
+lb00000300: ILOAD x
+  LDC_W B00000200
+  IAND
+  IFEQ lb00000100
+lb00000200: LDC_W B00000200
+  IRETURN
+lb00000100: LDC_W B00000100
+  IRETURN
+lb000000ff: ILOAD x
+  LDC_W B000000F0
+  IAND
+  IFEQ lb0000000f
+lb000000f0: ILOAD x
+  LDC_W B000000C0
+  IAND
+  IFEQ lb00000030
+lb000000c0: ILOAD x
+  LDC_W B00000080
+  IAND
+  IFEQ lb00000040
+lb00000080: LDC_W B00000080
+  IRETURN
+lb00000040: BIPUSH 64
+  IRETURN
+lb00000030: ILOAD x
+  LDC_W B00000020
+  IAND
+  IFEQ lb00000010
+lb00000020: BIPUSH 32
+  IRETURN
+lb00000010: BIPUSH 16
+  IRETURN
+lb0000000f: ILOAD x
+  LDC_W B0000000C
+  IAND
+  IFEQ lb00000003
+lb0000000c: ILOAD x
+  LDC_W B00000008
+  IAND
+  IFEQ lb00000004
+lb00000008: BIPUSH 8
+  IRETURN
+lb00000004: BIPUSH 4
+  IRETURN
+lb00000003: ILOAD x
+  LDC_W B00000002
+  IAND
+  IFEQ lb00000001
+lb00000002: BIPUSH 2
+  IRETURN
+lb00000001: ILOAD x
+  IFEQ lb00000000
+  BIPUSH 1
+  IRETURN
+lb00000000: BIPUSH 0
+  IRETURN
+.end-method
+
+.method msb_index(x)
+lbffffffff: ILOAD x
+  LDC_W BFFFF0000
+  IAND
+  IFEQ lb0000ffff
+lbffff0000: ILOAD x
+  LDC_W BFF000000
+  IAND
+  IFEQ lb00ff0000
+lbff000000: ILOAD x
+  LDC_W BF0000000
+  IAND
+  IFEQ lb0f000000
+lbf0000000: ILOAD x
+  LDC_W BC0000000
+  IAND
+  IFEQ lb30000000
+lbc0000000: ILOAD x
+  LDC_W B80000000
+  IAND
+  IFEQ lb40000000
+lb80000000: BIPUSH 32
+  IRETURN
+lb40000000: BIPUSH 31
+  IRETURN
+lb30000000: ILOAD x
+  LDC_W B20000000
+  IAND
+  IFEQ lb10000000
+lb20000000: BIPUSH 30
+  IRETURN
+lb10000000: BIPUSH 29
+  IRETURN
+lb0f000000: ILOAD x
+  LDC_W B0C000000
+  IAND
+  IFEQ lb03000000
+lb0c000000: ILOAD x
+  LDC_W B08000000
+  IAND
+  IFEQ lb04000000
+lb08000000: BIPUSH 28
+  IRETURN
+lb04000000: BIPUSH 27
+  IRETURN
+lb03000000: ILOAD x
+  LDC_W B02000000
+  IAND
+  IFEQ lb01000000
+lb02000000: BIPUSH 26
+  IRETURN
+lb01000000: BIPUSH 25
+  IRETURN
+lb00ff0000: ILOAD x
+  LDC_W B00F00000
+  IAND
+  IFEQ lb000f0000
+lb00f00000: ILOAD x
+  LDC_W B00C00000
+  IAND
+  IFEQ lb00300000
+lb00c00000: ILOAD x
+  LDC_W B00800000
+  IAND
+  IFEQ lb00400000
+lb00800000: BIPUSH 24
+  IRETURN
+lb00400000: BIPUSH 23
+  IRETURN
+lb00300000: ILOAD x
+  LDC_W B00200000
+  IAND
+  IFEQ lb00100000
+lb00200000: BIPUSH 22
+  IRETURN
+lb00100000: BIPUSH 21
+  IRETURN
+lb000f0000: ILOAD x
+  LDC_W B000C0000
+  IAND
+  IFEQ lb00030000
+lb000c0000: ILOAD x
+  LDC_W B00080000
+  IAND
+  IFEQ lb00040000
+lb00080000: BIPUSH 20
+  IRETURN
+lb00040000: BIPUSH 19
+  IRETURN
+lb00030000: ILOAD x
+  LDC_W B00020000
+  IAND
+  IFEQ lb00010000
+lb00020000: BIPUSH 18
+  IRETURN
+lb00010000: BIPUSH 17
+  IRETURN
+lb0000ffff: ILOAD x
+  LDC_W B0000FF00
+  IAND
+  IFEQ lb000000ff
+lb0000ff00: ILOAD x
+  LDC_W B0000F000
+  IAND
+  IFEQ lb00000f00
+lb0000f000: ILOAD x
+  LDC_W B0000C000
+  IAND
+  IFEQ lb00003000
+lb0000c000: ILOAD x
+  LDC_W B00008000
+  IAND
+  IFEQ lb00004000
+lb00008000: BIPUSH 16
+  IRETURN
+lb00004000: BIPUSH 15
+  IRETURN
+lb00003000: ILOAD x
+  LDC_W B00002000
+  IAND
+  IFEQ lb00001000
+lb00002000: BIPUSH 14
+  IRETURN
+lb00001000: BIPUSH 13
+  IRETURN
+lb00000f00: ILOAD x
+  LDC_W B00000C00
+  IAND
+  IFEQ lb00000300
+lb00000c00: ILOAD x
+  LDC_W B00000800
+  IAND
+  IFEQ lb00000400
+lb00000800: BIPUSH 12
+  IRETURN
+lb00000400: BIPUSH 11
+  IRETURN
+lb00000300: ILOAD x
+  LDC_W B00000200
+  IAND
+  IFEQ lb00000100
+lb00000200: BIPUSH 10
+  IRETURN
+lb00000100: BIPUSH 9
+  IRETURN
+lb000000ff: ILOAD x
+  LDC_W B000000F0
+  IAND
+  IFEQ lb0000000f
+lb000000f0: ILOAD x
+  LDC_W B000000C0
+  IAND
+  IFEQ lb00000030
+lb000000c0: ILOAD x
+  LDC_W B00000080
+  IAND
+  IFEQ lb00000040
+lb00000080: BIPUSH 8
+  IRETURN
+lb00000040: BIPUSH 7
+  IRETURN
+lb00000030: ILOAD x
+  LDC_W B00000020
+  IAND
+  IFEQ lb00000010
+lb00000020: BIPUSH 6
+  IRETURN
+lb00000010: BIPUSH 5
+  IRETURN
+lb0000000f: ILOAD x
+  LDC_W B0000000C
+  IAND
+  IFEQ lb00000003
+lb0000000c: ILOAD x
+  LDC_W B00000008
+  IAND
+  IFEQ lb00000004
+lb00000008: BIPUSH 4
+  IRETURN
+lb00000004: BIPUSH 3
+  IRETURN
+lb00000003: ILOAD x
+  LDC_W B00000002
+  IAND
+  IFEQ lb00000001
+lb00000002: BIPUSH 2
+  IRETURN
+lb00000001: ILOAD x
+  IFEQ lb00000000
+  BIPUSH 1
+  IRETURN
+lb00000000: BIPUSH 0
+  IRETURN
+.end-method
+
+.method abs(x)
+  ILOAD x
+  IFLT negate
+  ILOAD x
+  IRETURN
+negate:
+  BIPUSH 0
+  ILOAD x
+  ISUB
+  IRETURN
+.end-method
+
+////////////////////////////////////////////////////////////////////////////////
+// Repeated subtraction division
+////////////////////////////////////////////////////////////////////////////////
+// A complex divide implementation running in O(32)
+.method div(a, b)
+.var
+  signed
+  res
+  k
+  bshift
+.end-var
+  // store the signed state
+  BIPUSH 0
+  ISTORE signed
+
+  // get absolute of a and b
+ha:
+  ILOAD a
+  IFLT negate_a
+hb:
+  ILOAD b
+  IFLT negate_b
+handled:
+
+  BIPUSH 0
+  ISTORE res
+
+  // edge case if a < b, we're done
+  ILOAD a
+  ILOAD b
+  ISUB
+  IFLT apply_sign
+
+  // edge case if b == 0, we error
+  ILOAD b
+  IFEQ division_by_zero
+
+  BIPUSH 1
+  ISTORE k
+  ILOAD b
+  ISTORE bshift
+
+  // build a stack of kn, kn * b, kn-1, kn-1 * b, ..., k0 (1), k0 * b (b)
+build_stack:
+  ILOAD a
+  ILOAD bshift
+  ISUB
+  IFLT stack_unwind
+
+  // push bshift to stack and bshift += bshift
+  ILOAD bshift
+  DUP
+  DUP
+  IADD
+  ISTORE bshift
+
+  // push k to stack and k += k
+  ILOAD k
+  DUP
+  DUP
+  IADD
+  ISTORE k
+  GOTO build_stack
+
+stack_unwind:
+  ISTORE k // stores k from (k * b) in size
+
+  // a - (k * b)
+  ILOAD a
+  SWAP
+  ISUB
+
+  // duplicate a - (k * b) on stack
+  DUP
+
+  // if (a  - (k * b) < 0) cant_substract
+  IFLT cant_substract
+
+substract:
+  // store a = a - k * b
+  ISTORE a
+
+  // calculate res
+  ILOAD res
+  ILOAD k
+  IADD
+  ISTORE res
+
+  ILOAD k
+  BIPUSH 1
+  IF_ICMPEQ apply_sign
+  GOTO stack_unwind
+
+cant_substract:
+  // pop a - (k * b) from the stack
+  POP
+
+  ILOAD k
+  BIPUSH 1
+  IF_ICMPEQ apply_sign
+  GOTO stack_unwind
+
+apply_sign:
+  ILOAD signed
+  IFEQ ret_res
+  BIPUSH 0
+  ILOAD res
+  ISUB
+  IRETURN
+ret_res:
+  ILOAD res
+  IRETURN
+
+negate_a:
+  BIPUSH 0
+  ILOAD a
+  ISUB
+  ISTORE a
+  IINC signed 1
+  GOTO hb
+negate_b:
+  BIPUSH 0
+  ILOAD b
+  ISUB
+  ISTORE b
+  IINC signed 1
+  GOTO handled
+
+division_by_zero:
+  BIPUSH 100
+  OUT
+  BIPUSH 105
+  OUT
+  BIPUSH 118
+  OUT
+  BIPUSH 32
+  OUT
+  BIPUSH 98
+  OUT
+  BIPUSH 121
+  OUT
+  BIPUSH 32
+  OUT
+  BIPUSH 48
+  OUT
+  BIPUSH 10
+  OUT
+  ERR
+.end-method
+
+////////////////////////////////////////////////////////////////////////////////
+// Repeated subtraction division
+////////////////////////////////////////////////////////////////////////////////
+// a simple division algorithm, repeatedly subtracts b from a until a < b
+//
+// signed = (a < 0) + (b < 0)
+// a, b = |a|, |b|
+//
+// while (a - b > 0)
+//    a = a - b
+//    r++
+//
+// if (signed)
+//    r = -r
+//
+// return r
+.method divs(a, b)
+.var
+  quotient
+  signed
+.end-var
+
+  ILOAD b
+  IFEQ div_by_0
+
+  // store the signed state
+  ILOAD a
+  LDC_W BITMASK_SIGNBIT
+  IAND
+  ILOAD b
+  LDC_W BITMASK_SIGNBIT
+  IAND
+  IADD
+  ISTORE signed
+  BIPUSH 0
+  ISTORE quotient
+
+hsa: ILOAD a
+  IFLT negate_a
+hsb: ILOAD b
+  IFLT negate_b
+loop:
+  // if (a < b) goto handle_sign, a = a - b (leaves a - b on stack in handle_sign)
+  ILOAD a
+  ILOAD b
+  ISUB
+  DUP
+  IFLT handle_sign
+  ISTORE a
+  IINC quotient 1
+  GOTO loop
+
+handle_sign:
+  // loop algorithm leaves a - b on stack
+  POP
+  ILOAD signed
+  IFEQ ret_q
+  BIPUSH 0
+  ILOAD quotient
+  ISUB
+  IRETURN
+ret_q:
+  ILOAD quotient
+  IRETURN
+
+negate_a:
+  BIPUSH 0
+  ILOAD a
+  ISUB
+  ISTORE a
+  GOTO hsb
+negate_b:
+  BIPUSH 0
+  ILOAD b
+  ISUB
+  ISTORE b
+  GOTO loop
+div_by_0: ERR
+.end-method
+
+////////////////////////////////////////////////////////////////////////////////
+// divby2pow(x, y) where y = 2 ** i
+////////////////////////////////////////////////////////////////////////////////
+// if (x < 0)
+//     s = 0
+//     x = 0 - x
+// else
+//     s = 1
+// b = 1
+// r = 0
+//
+// top_bit = msb(x)
+// GOTO loop_body
+//
+// loop_update:
+//   y *= 2
+//   b *= 2
+// loop_body:
+//   if (x & y) r |= b2
+//   if (y < top_bit) GOTO loop_update
+//
+// if (s == 0)
+//    return 0 - r
+// return r
+.method divby2pow(x, y)
+.var
+  s
+  b
+  r
+  top_bit
+.end-var
+
+  ILOAD x
+  IFLT set_sign
+  BIPUSH 1
+  ISTORE s
+calculation:
+  BIPUSH 1
+  ISTORE b
+  BIPUSH 0
+  ISTORE r
+  LDC_W _OBJREF
+  ILOAD x
+  INVOKEVIRTUAL msb
+  ISTORE top_bit
+
+  GOTO loop_body
+
+loop_update:
+  ILOAD y
+  DUP
+  IADD
+  ISTORE y
+  ILOAD b
+  DUP
+  IADD
+  ISTORE b
+loop_body:
+  ILOAD x
+  ILOAD y
+  IAND
+  IFEQ second_if
+  ILOAD r
+  ILOAD b
+  IOR
+  ISTORE r
+second_if:
+  ILOAD y
+  ILOAD top_bit
+  ISUB
+  IFLT loop_update
+
+handle_sign:
+  ILOAD s
+  IFEQ ret_neg_r
+  ILOAD r
+  IRETURN
+
+ret_neg_r:
+  BIPUSH 0
+  ILOAD r
+  ISUB
+  IRETURN
+
+set_sign:
+  BIPUSH 0
+  ISTORE s
+  BIPUSH 0
+  ILOAD x
+  ISUB
+  ISTORE x
+  GOTO calculation
+.end-method
+
+////////////////////////////////////////////////////////////////////////////////
+// Simple modulo, calls divs and muls
+////////////////////////////////////////////////////////////////////////////////
+.method mod(a,b)
+  ILOAD a
+  LDC_W _OBJREF
+  LDC_W _OBJREF
+  ILOAD a
+  ILOAD b
+  INVOKEVIRTUAL div
+  ILOAD b
+  INVOKEVIRTUAL mul
+  ISUB
+  IRETURN
+.end-method
+
+////////////////////////////////////////////////////////////////////////////////
+// Shifting substraction multiplication
+////////////////////////////////////////////////////////////////////////////////
+//    signed = (a < 0) + (b < 0)
+//    a, b = |a|, |b|
+//    res  = 0
+//    pow2 = 1
+//    sum  = b
+//
+//    while (pow2 < a)
+//        if (a & pow2) res += sum;
+//        pow2 += pow2
+//        sum  += sum
+//
+//    if (signed)
+//        res = -res
+//
+//    return res
+.method mul(a, b)
+.var
+  signed
+  res
+  pow2
+  sum
+.end-var
+
+  // store the signed state
+  ILOAD a
+  LDC_W BITMASK_SIGNBIT
+  IAND
+  ILOAD b
+  LDC_W BITMASK_SIGNBIT
+  IAND
+  IADD
+  ISTORE signed
+
+  // get absolute of a and b
+hsa: ILOAD a
+  IFLT negate_a
+hsb: ILOAD b
+  IFLT negate_b
+
+for_init:
+  BIPUSH 0
+  ISTORE res   // result
+  BIPUSH 1
+  ISTORE pow2  // 2^n
+  ILOAD b
+  ISTORE sum   // b * 2^n
+
+for_loop:
+  // if (a < (1 << n)) -> done
+  ILOAD a
+  ILOAD pow2
+  ISUB
+  IFLT apply_sign
+
+  // if (a & (1 << n) == 0) continue
+  ILOAD a
+  ILOAD pow2
+  IAND
+  IFEQ for_update
+
+  // res += b * 2^n
+  ILOAD res
+  ILOAD sum
+  IADD
+  ISTORE res
+
+for_update:
+  ILOAD pow2
+  DUP
+  IADD
+  ISTORE pow2
+  ILOAD sum
+  DUP
+  IADD
+  ISTORE sum
+  GOTO for_loop
+
+negate_a:
+  BIPUSH 0
+  ILOAD a
+  ISUB
+  ISTORE a
+  GOTO hsb
+negate_b:
+  BIPUSH 0
+  ILOAD b
+  ISUB
+  ISTORE b
+  GOTO for_init
+
+apply_sign:
+  // res possibly overflowed, apply positive filter
+  ILOAD res
+  LDC_W BITMASK_INVSIGN
+  IAND
+  ILOAD signed
+  IFEQ ret_res
+  BIPUSH 0
+  SWAP
+  ISUB
+  IRETURN
+
+ret_res:
+  IRETURN
+.end-method
+
+////////////////////////////////////////////////////////////////////////////////
+// Repeated subtraction multiplication
+////////////////////////////////////////////////////////////////////////////////
+// if (b < 0)
+//     a = -a
+//     b = -b
+//
+// while (b)
+//     res += a
+//     b--
+//
+// return a
+.method muls(a, b)
+.var
+  result
+.end-var
+
+  BIPUSH 0
+  ISTORE result
+  ILOAD b
+  IFLT handle_sign
+
+loop:
+  ILOAD b
+  IFEQ done
+  ILOAD result
+  ILOAD a
+  IADD
+  ISTORE result
+  IINC b -1
+  GOTO loop
+
+done:
+  ILOAD result
+  IRETURN
+
+handle_sign:
+  // a = -a, b = -b
+  BIPUSH 0
+  ILOAD a
+  ISUB
+  ISTORE a
+  BIPUSH 0
+  ILOAD b
+  ISUB
+  ISTORE b
+  GOTO loop
+.end-method
+
+.method factorial(x)
+.var
+  res
+.end-var
+  ILOAD x
+  IFEQ ret_1
+
+  ILOAD x
+  ISTORE res
+
+loop:
+  IINC x -1
+  ILOAD x
+  BIPUSH 1
+  ISUB
+  IFLT done
+  LDC_W _OBJREF
+  ILOAD res
+  ILOAD x
+  INVOKEVIRTUAL mul
+  ISTORE res
+  GOTO loop
+
+done:
+  ILOAD res
+  IRETURN
+
+ret_1:
+  BIPUSH 1
+  IRETURN
+.end-method
+
+.method max(a, b)
+  ILOAD a
+  ILOAD b
+  ISUB
+  IFLT ret_a
+  ILOAD b
+  IRETURN
+ret_a:
+  ILOAD a
+  IRETURN
+.end-method
+
+.method min(a, b)
+  ILOAD a
+  ILOAD b
+  ISUB
+  IFLT ret_b
+  ILOAD a
+  IRETURN
+ret_b:
+  ILOAD b
+  IRETURN
+.end-method
+
+.method print_number(a)
+.var
+    divisor
+.end-var
+
+    ILOAD a
+    IFLT sign_handle
+positive:
+    ILOAD a
+  BIPUSH 10
+  ISUB
+  IFLT print_digit
+
+    // calculate a / 10
+    LDC_W _OBJREF
+  ILOAD a
+  BIPUSH 10
+  INVOKEVIRTUAL div
+  ISTORE divisor
+
+    // recursive call to print_number
+    LDC_W _OBJREF
+  ILOAD divisor
+  INVOKEVIRTUAL print_number
+  POP
+
+    // set a to a - (a / 10) * 10
+    ILOAD a
+  ILOAD divisor
+  DUP
+  IADD
+  DUP
+  DUP
+  IADD
+  DUP
+  IADD
+  IADD
+  ISUB
+  ISTORE a
+
+print_digit:
+    ILOAD a
+  BIPUSH 48
+  IADD
+    OUT
+
+    BIPUSH 0
+  IRETURN
+
+sign_handle:
+    BIPUSH 45
+    OUT
+    BIPUSH 0
+  ILOAD a
+  ISUB
+  ISTORE a
+    GOTO positive
+.end-method
+
+.method hex_helper(x)
+.var
+    divisor
+.end-var
+
+start:
+    ILOAD x
+  BIPUSH 10
+  ISUB
+  IFLT print_digit
+    ILOAD x
+  BIPUSH 17
+  ISUB
+  IFLT print_hex
+
+    // calculate a / 16
+    LDC_W _OBJREF
+  ILOAD x
+  BIPUSH 16
+  INVOKEVIRTUAL div
+  ISTORE divisor
+
+    // recursive call to print_number
+    LDC_W _OBJREF
+  ILOAD divisor
+  INVOKEVIRTUAL hex_helper
+  POP
+
+    // set x to x - (x / 16) * 16
+    ILOAD x
+  ILOAD divisor
+  DUP
+  IADD
+  DUP
+  IADD
+  DUP
+  IADD
+  DUP
+  IADD
+  ISUB
+  ISTORE x
+    GOTO start
+
+print_digit:
+    ILOAD x
+  BIPUSH 48
+  IADD
+    OUT
+    BIPUSH 0
+  IRETURN
+
+print_hex:
+    ILOAD x
+  BIPUSH 10
+  ISUB
+  BIPUSH 97
+  IADD
+    OUT
+    BIPUSH 0
+  IRETURN
+.end-method
+
+.method print_hex_number(x)
+    ILOAD x
+  IFLT print_minus
+print:
+    BIPUSH 48
+  OUT
+    BIPUSH 120
+  OUT
+    LDC_W _OBJREF
+  ILOAD x
+  INVOKEVIRTUAL hex_helper
+  IRETURN
+print_minus:
+    BIPUSH 45
+  OUT
+    BIPUSH 0
+  ILOAD x
+  ISUB
+  ISTORE x
+    GOTO print
+.end-method
+
+.method bytecode_dump(txt)
+.var
+  pc
+  last_pc
+  op
+.end-var
+
+  // set program counter
+  BIPUSH 2
+  ISTORE pc
+  BIPUSH 1
+  ILOAD txt
+  IALOAD
+  BIPUSH -1
+  IADD
+  ISTORE last_pc
+
+exec_loop:
+  // if last_pc < pc
+  ILOAD last_pc
+  ILOAD pc
+  ISUB
+  IFLT exec_done
+
+  // read op
+  ILOAD pc
+  ILOAD txt
+  IALOAD
+  ISTORE op
+
+  BIPUSH 112
+  OUT
+  BIPUSH 99
+  OUT
+  BIPUSH 95
+  OUT
+  //vcall(print_number, sub(var(pc), LIST_ELEM0_INDEX()))
+  LDC_W _OBJREF
+  ILOAD pc
+  INVOKEVIRTUAL print_number
+  POP
+  BIPUSH 58
+  OUT
+  BIPUSH 32
+  OUT
+
+  // move pc past op
+  IINC pc 1
+
+  // do a small binary tree lookup, 1 < op => JZ/JNZ/OUT/IN else ADD/MEM
+  BIPUSH 1
+  ILOAD op
+  ISUB
+  IFLT exec_rest
+
+  // if (op == 0) goto exec_add
+  ILOAD op
+  IFEQ exec_add
+
+exec_mem:
+  // mem_ptr += txt[pc]
+  ILOAD pc
+  ILOAD txt
+  IALOAD
+  ISTORE op
+
+  BIPUSH 77
+  OUT
+  BIPUSH 69
+  OUT
+  BIPUSH 77
+  OUT
+  BIPUSH 32
+  OUT
+  LDC_W _OBJREF
+  ILOAD op
+  INVOKEVIRTUAL print_number
+  POP
+  BIPUSH 10
+  OUT
+
+  // pc is increased by 1 for MEM's argument
+  IINC pc 1
+  GOTO exec_loop
+
+exec_add:
+  ILOAD pc
+  ILOAD txt
+  IALOAD
+  ISTORE op
+
+  BIPUSH 65
+  OUT
+  BIPUSH 68
+  OUT
+  BIPUSH 68
+  OUT
+  BIPUSH 32
+  OUT
+  LDC_W _OBJREF
+  ILOAD op
+  INVOKEVIRTUAL print_number
+  POP
+  BIPUSH 10
+  OUT
+
+  // pc is increased by 1, for ADD's argument
+  IINC pc 1
+  GOTO exec_loop
+
+exec_rest:
+  ILOAD op
+  BIPUSH 4
+  ISUB
+  IFLT exec_jumps
+  ILOAD op
+  BIPUSH 4
+  IF_ICMPEQ exec_out
+  ILOAD op
+  BIPUSH 5
+  IF_ICMPEQ exec_in
+  ILOAD op
+  BIPUSH 6
+  IF_ICMPEQ exec_clr
+
+  // Opcodes shouldnt get here
+  BIPUSH 73
+  OUT
+  BIPUSH 110
+  OUT
+  BIPUSH 99
+  OUT
+  BIPUSH 111
+  OUT
+  BIPUSH 114
+  OUT
+  BIPUSH 114
+  OUT
+  BIPUSH 101
+  OUT
+  BIPUSH 99
+  OUT
+  BIPUSH 116
+  OUT
+  BIPUSH 32
+  OUT
+  BIPUSH 111
+  OUT
+  BIPUSH 112
+  OUT
+  BIPUSH 10
+  OUT
+  GOTO exec_loop
+
+exec_in:
+  BIPUSH 73
+  OUT
+  BIPUSH 78
+  OUT
+  BIPUSH 10
+  OUT
+  GOTO exec_loop
+
+exec_out:
+  BIPUSH 79
+  OUT
+  BIPUSH 85
+  OUT
+  BIPUSH 84
+  OUT
+  BIPUSH 10
+  OUT
+  GOTO exec_loop
+
+exec_jumps:
+  ILOAD op
+  BIPUSH 3
+  IF_ICMPEQ exec_jnz
+
+exec_jz:
+  BIPUSH 74
+  OUT
+  BIPUSH 90
+  OUT
+  BIPUSH 32
+  OUT
+  GOTO exec_do_jump
+
+exec_jnz:
+  BIPUSH 74
+  OUT
+  BIPUSH 78
+  OUT
+  BIPUSH 90
+  OUT
+  BIPUSH 32
+  OUT
+
+exec_do_jump:
+  ILOAD pc
+  ILOAD txt
+  IALOAD
+  ISTORE op
+  LDC_W _OBJREF
+  ILOAD op
+  INVOKEVIRTUAL print_number
+  POP
+  BIPUSH 10
+  OUT
+
+  // pc is increased by 1, for JUMP's argument
+  IINC pc 1
+  GOTO exec_loop
+
+exec_clr:
+  BIPUSH 67
+  OUT
+  BIPUSH 76
+  OUT
+  BIPUSH 82
+  OUT
+  BIPUSH 10
+  OUT
+  GOTO exec_loop
+
+exec_done:
+  BIPUSH 0
+  IRETURN
+.end-method
+
+// Reads characters until char=0 and puts them in a list
+.method get_input()
+.var
+  input
+  char
+.end-var
+
+  LDC_W _OBJREF
+  LDC_W INITIAL_CAPACITY
+  INVOKEVIRTUAL list_new
+  ISTORE input
+
+loop:
+  IN
+  ISTORE char
+  ILOAD char
+  IFEQ done
+
+  LDC_W _OBJREF
+  ILOAD input
+  ILOAD char
+  INVOKEVIRTUAL list_append
+  ISTORE input
+  GOTO loop
+
+done:
+  ILOAD input
+  IRETURN
+.end-method
+
+.method _main()
+.var
+  txt
+  input
+.end-var
+
+  // compile brainfuck at stdin to bytecode
+  LDC_W _OBJREF
+  INVOKEVIRTUAL bytecode_compile
+  ISTORE txt
+
+  // get input
+  LDC_W _OBJREF
+  INVOKEVIRTUAL get_input
+  ISTORE input
+
+  LDC_W _OBJREF
+  ILOAD txt
+  ILOAD input
+  INVOKEVIRTUAL bytecode_execute
+  POP
+
+  BIPUSH 0
+  IRETURN
+.end-method
